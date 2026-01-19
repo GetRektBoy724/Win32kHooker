@@ -33,20 +33,12 @@ PVOID GetSessionState() {
 }
 
 BOOL ResolveWin32kDataPtr(LPCSTR functionName, PDWORD64 DataPtrAddr, PDWORD64 FuncPtr) {
-	PVOID win32kBase = GetModuleBase("win32k.sys", NULL);
-	if (!win32kBase) {
-		return FALSE;
-	}
 	PVOID Win32kSdt = GetWin32kSdtAddress();
 	if (!Win32kSdt) {
 		return FALSE;
 	}
 	PBYTE pFunction = (PBYTE)GetWin32kSyscallRoutine(Win32kSdt, functionName, 0);
 	if (!pFunction) {
-		return FALSE;
-	}
-	PVOID W32GetSessionStateAddr = GetW32GetSessionStateAddr();
-	if (!W32GetSessionStateAddr) {
 		return FALSE;
 	}
 	PVOID SessionStateAddr = GetSessionState();
@@ -92,9 +84,7 @@ BOOL ResolveWin32kDataPtr(LPCSTR functionName, PDWORD64 DataPtrAddr, PDWORD64 Fu
             for (int i = 0; i < 3; i++) {
                 hde64_disasm(scanner, &hs_next);
 
-                // USAGE OF MACRO HERE
                 if (IS_MOV_DEREF(hs_next)) {
-                    // USAGE OF MACRO HERE
                     foundOffsets[i] = GET_DISP(hs_next);
                     scanner += hs_next.len;
                 }
